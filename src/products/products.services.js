@@ -48,7 +48,7 @@ const getProductById = (req, res) => {
     })
 }
 
-//!Servicio de UPDATE parcial//
+//!Servicio de PACTH UPDATE parcial//
 const patchProduct = (req, res) => {
     const id = req.params.id
     const {name, category, price, isAvailable} = req.body;
@@ -67,6 +67,37 @@ const patchProduct = (req, res) => {
             res.status(400).json({message:error.message})
         })
 }
+
+//!Servicio de PUT UPDATE total//
+
+const putProduct = (req, res) => {
+    const id = req.params.id;
+    const {name, category, price, isAvailable}=req.body
+    //?if para validar los datos, y generar error si no vienen todos los datos necesarios
+    if(name && category && price && isAvailable){
+        productsControllers.editProduct(id, {name, category, price, isAvailable})
+           .then((response) => {
+            //? Este if valida si un producto existe o no (Valid or Invalid ID)
+            if(response[0]){
+                res.status(200).json({message:`Product whit ID: ${id}, edited succesfully!`})
+            }else{
+                res.status(404).json({mesagge: 'Invalid ID'})
+            }
+        })
+        .catch (err => {
+            res.status(400).json({message:err.message})
+        })
+    }else {
+        res.status(400).json({message:'Missing data', fields : {
+            name:'string',
+            category:'string',
+            price:'integer',
+            isAvailable:'boolean'
+        }})
+    }
+}
+
+
 
 //!Servicio para el DELETE//
 const  deleteProduct = (req, res) => {
@@ -89,6 +120,7 @@ module.exports = {
     getProductById,
     postProduct,
     patchProduct,
+    putProduct,
     deleteProduct
 
 }
